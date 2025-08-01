@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3b82f6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purvanchal Recovery Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(30, 30, 46, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            padding: 24px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .content {
+            padding: 24px;
+        }
+
+        .form-section {
+            background: rgba(45, 45, 68, 0.8);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            .form-row.three-columns {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            .form-row.full-width {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(30, 30, 46, 0.9);
+            color: #e2e8f0;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .entries-section {
+            background: rgba(45, 45, 68, 0.8);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .entries-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .total-amount {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .entries-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            background: rgba(30, 30, 46, 0.6);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .entries-table th {
+            background: rgba(59, 130, 246, 0.2);
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: #cbd5e1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .entries-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .entries-table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .no-entries {
+            text-align: center;
+            color: #94a3b8;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 12px;
+            }
+            
+            .content {
+                padding: 16px;
+            }
+            
+            .form-section, .entries-section {
+                padding: 16px;
+            }
+            
+            .entries-table {
+                font-size: 12px;
+            }
+            
+            .entries-table th,
+            .entries-table td {
+                padding: 8px 4px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        .currency {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Purvanchal Recovery and Banking Services</h1>
+            <p>Daily Recovery Tracking System</p>
+        </div>
+        
+        <div class="content">
+            <div class="form-section">
+                <div class="form-row full-width">
+                    <div>
+                        <label for="recoveryDate">Recovery Date</label>
+                        <input type="date" id="recoveryDate" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div>
+                        <label for="customerName">Customer Name</label>
+                        <input type="text" id="customerName" placeholder="Enter customer name" required>
+                    </div>
+                    <div>
+                        <label for="bankName">Bank Name</label>
+                        <input type="text" id="bankName" placeholder="Enter bank name" required>
+                    </div>
+                </div>
+                
+                <div class="form-row three-columns">
+                    <div>
+                        <label for="branchName">Branch Name</label>
+                        <input type="text" id="branchName" placeholder="Enter branch name" required>
+                    </div>
+                    <div>
+                        <label for="accountNumber">Account Number</label>
+                        <input type="text" id="accountNumber" placeholder="Enter account number" required>
+                    </div>
+                    <div>
+                        <label for="recoveredAmount">Recovered Amount (₹)</label>
+                        <input type="number" id="recoveredAmount" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="addEntry()">Add Recovery Entry</button>
+            </div>
+            
+            <div class="entries-section">
+                <div class="entries-header">
+                    <h3>Recovery Entries</h3>
+                    <div class="total-amount">
+                        Total: ₹<span id="totalAmount">0.00</span>
+                    </div>
+                </div>
+                
+                <div id="entriesContainer">
+                    <div class="no-entries">
+                        No recovery entries added yet. Add your first entry above.
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-success" onclick="generatePDF()" id="generateBtn" disabled>
+                        Generate PDF Report
+                    </button>
+                    <button class="btn btn-danger" onclick="clearAllEntries()">
+                        Clear All Entries
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let recoveryEntries = [];
+        let serialCounter = 1;
+
+        // Set today's date as default
+        document.getElementById('recoveryDate').valueAsDate = new Date();
+
+        function addEntry() {
+            const date = document.getElementById('recoveryDate').value;
+            const name = document.getElementById('customerName').value.trim();
+            const bank = document.getElementById('bankName').value.trim();
+            const branch = document.getElementById('branchName').value.trim();
+            const account = document.getElementById('accountNumber').value.trim();
+            const amount = parseFloat(document.getElementById('recoveredAmount').value);
+
+            if (!date || !name || !bank || !branch || !account || !amount || amount <= 0) {
+                alert('Please fill all fields with valid data');
+                return;
+            }
+
+            const entry = {
+                serial: serialCounter++,
+                date: date,
+                name: name,
+                bank: bank,
+                branch: branch,
+                account: account,
+                amount: amount
+            };
+
+            recoveryEntries.push(entry);
+            updateEntriesDisplay();
+            clearForm();
+        }
+
+        function clearForm() {
+            document.getElementById('customerName').value = '';
+            document.getElementById('bankName').value = '';
+            document.getElementById('branchName').value = '';
+            document.getElementById('accountNumber').value = '';
+            document.getElementById('recoveredAmount').value = '';
+        }
+
+        function updateEntriesDisplay() {
+            const container = document.getElementById('entriesContainer');
+            const totalSpan = document.getElementById('totalAmount');
+            const generateBtn = document.getElementById('generateBtn');
+
+            if (recoveryEntries.length === 0) {
+                container.innerHTML = '<div class="no-entries">No recovery entries added yet. Add your first entry above.</div>';
+                totalSpan.textContent = '0.00';
+                generateBtn.disabled = true;
+                return;
+            }
+
+            const total = recoveryEntries.reduce((sum, entry) => sum + entry.amount, 0);
+            totalSpan.textContent = total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            let tableHTML = `
+                <table class="entries-table">
+                    <thead>
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Customer Name</th>
+                            <th>Bank Name</th>
+                            <th>Branch</th>
+                            <th>Account No.</th>
+                            <th>Amount (₹)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            recoveryEntries.forEach((entry, index) => {
+                tableHTML += `
+                    <tr>
+                        <td>${entry.serial}</td>
+                        <td>${entry.name}</td>
+                        <td>${entry.bank}</td>
+                        <td>${entry.branch}</td>
+                        <td>${entry.account}</td>
+                        <td class="currency">₹${entry.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                        <td><button class="btn btn-danger" onclick="removeEntry(${index})">Remove</button></td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody></table>';
+            container.innerHTML = tableHTML;
+            generateBtn.disabled = false;
+        }
+
+        function removeEntry(index) {
+            recoveryEntries.splice(index, 1);
+            updateEntriesDisplay();
+        }
+
+        function clearAllEntries() {
+            if (recoveryEntries.length === 0) return;
+            
+            if (confirm('Are you sure you want to clear all entries? This action cannot be undone.')) {
+                recoveryEntries = [];
+                serialCounter = 1;
+                updateEntriesDisplay();
+            }
+        }
+
+        function generatePDF() {
+            if (recoveryEntries.length === 0) {
+                alert('No entries to generate PDF');
+                return;
+            }
+
+            // Hide the main content and show print content
+            const originalContent = document.body.innerHTML;
+            const printContent = createPrintableContent();
+            
+            // Create print styles
+            const printStyles = `
+                <style>
+                    body { 
+                        font-family: Arial, sans-serif; 
+                        margin: 20px; 
+                        color: #000 !important;
+                        background: #fff !important;
+                        line-height: 1.4;
+                    }
+                    * { color: #000 !important; background: transparent !important; }
+                    .header { 
+                        text-align: center; 
+                        margin-bottom: 30px; 
+                        border-bottom: 2px solid #000;
+                        padding-bottom: 20px;
+                    }
+                    .header h1 { 
+                        font-size: 24px; 
+                        margin: 0; 
+                        color: #000 !important;
+                        font-weight: bold;
+                    }
+                    .header p { 
+                        font-size: 16px; 
+                        margin: 10px 0 0 0; 
+                        color: #000 !important;
+                    }
+                    table { 
+                        width: 100%; 
+                        border-collapse: collapse; 
+                        margin: 20px 0;
+                    }
+                    th, td { 
+                        border: 1px solid #000 !important; 
+                        padding: 10px 6px; 
+                        text-align: left;
+                        color: #000 !important;
+                        font-size: 12px;
+                    }
+                    th { 
+                        background-color: #f0f0f0 !important; 
+                        font-weight: bold;
+                    }
+                    .footer { 
+                        text-align: center; 
+                        margin-top: 30px; 
+                        padding-top: 20px;
+                        border-top: 2px solid #000;
+                        font-size: 18px;
+                        font-weight: bold;
+                        color: #000 !important;
+                    }
+                    .back-button {
+                        position: fixed;
+                        top: 10px;
+                        right: 10px;
+                        padding: 10px 20px;
+                        background: #007bff !important;
+                        color: white !important;
+                        border: none;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        z-index: 1000;
+                        font-size: 14px;
+                    }
+                    .print-instruction {
+                        position: fixed;
+                        top: 10px;
+                        left: 10px;
+                        padding: 10px;
+                        background: #28a745 !important;
+                        color: white !important;
+                        border-radius: 5px;
+                        font-size: 12px;
+                        z-index: 1000;
+                    }
+                    @media print {
+                        .back-button, .print-instruction { display: none !important; }
+                        body { margin: 0 !important; }
+                    }
+                </style>
+            `;
+            
+            // Replace page content with print version
+            document.body.innerHTML = `
+                ${printStyles}
+                <button class="back-button" onclick="restoreOriginalContent()">← Back to Form</button>
+                <div class="print-instruction">Press Ctrl+P (or Cmd+P on Mac) to print/save as PDF</div>
+                ${printContent}
+            `;
+            
+            // Store original content for restoration
+            window.originalContent = originalContent;
+            
+            // Auto-trigger print dialog after a short delay
+            setTimeout(() => {
+                window.print();
+            }, 500);
+        }
+
+        function restoreOriginalContent() {
+            if (window.originalContent) {
+                document.body.innerHTML = window.originalContent;
+                // Re-initialize event handlers by calling updateEntriesDisplay
+                updateEntriesDisplay();
+            }
+        }
+
+        // Handle browser back button and escape key
+        window.addEventListener('popstate', function() {
+            if (window.originalContent) {
+                restoreOriginalContent();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && window.originalContent) {
+                restoreOriginalContent();
+            }
+        });
+
+        function createPrintableContent() {
+            const dateStr = new Date(recoveryEntries[0].date).toLocaleDateString('en-IN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const total = recoveryEntries.reduce((sum, entry) => sum + entry.amount, 0);
+
+            let tableRows = '';
+            recoveryEntries.forEach(entry => {
+                tableRows += `
+                    <tr>
+                        <td>${entry.serial}</td>
+                        <td>${entry.name}</td>
+                        <td>${entry.bank}</td>
+                        <td>${entry.branch}</td>
+                        <td>${entry.account}</td>
+                        <td>₹${entry.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    </tr>
+                `;
+            });
+
+            return `
+                <div class="header">
+                    <h1>Purvanchal Recovery and Banking Services</h1>
+                    <p>Daily Recovery Report - ${dateStr}</p>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Customer Name</th>
+                            <th>Bank Name</th>
+                            <th>Branch Name</th>
+                            <th>Account Number</th>
+                            <th>Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+                
+                <div class="footer">
+                    Total Recovered Amount: ₹${total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
